@@ -3,36 +3,36 @@ import math
 from queue import PriorityQueue
 
 
-def astar_algorithm(draw, grid, start, goal):
+def astar_algorithm(draw, grid, begin, goal):
     """
     draw: Hàm để vẽ (sử dụng pygame)
     grid: Lưới các ô vuông (grid)
-    start: Điểm bắt đầu
+    begin: Điểm bắt đầu
     goal: Điểm đích
     """
     # Khởi tạo tập các nút biên (open set) O ← {S}
     open_set = PriorityQueue()
     count = 0
     #Thêm vào hàng đợi ưu tiên
-    open_set.put((0, count, start))  # (f(N), count, N)
+    open_set.put((0, count, begin))  # (f(N), count, N)
     came_from = {}
 
     # g(N): chi phí từ nút bắt đầu đến nút N
     g_score = {}
     for row in grid:
-        for spot in row:
-            g_score[spot] = float('inf')
-    g_score[start] = 0
+        for node in row:
+            g_score[node] = float('inf')
+    g_score[begin] = 0
 
     # f(N) = g(N) + h(N)
     f_score = {}
     for row in grid:
-        for spot in row:
-            f_score[spot] = float('inf')
-    f_score[start] = heuristic(start.get_pos(), goal.get_pos())
+        for node in row:
+            f_score[node] = float('inf')
+    f_score[begin] = heuristic(begin.getPos(), goal.getPos())
 
     # open_set_hash để theo dõi các nút đang được xét
-    open_set_hash = {start}
+    open_set_hash = {begin}
 
     # Vòng lặp chính (While O không rỗng)
     while not open_set.empty():
@@ -48,9 +48,9 @@ def astar_algorithm(draw, grid, start, goal):
 
         # 2. Nếu N thuộc G, return đường đi tới N
         if current == goal:
-            reconstruct_path(came_from, goal, draw)
-            goal.make_end()  # Đánh dấu điểm kết thúc
-            start.make_start()
+            reconstructPath(came_from, goal, draw)
+            goal.makeEnd()  # Đánh dấu điểm kết thúc
+            begin.makeStart() #Đánh dấu điểm bắt đầu
             return True
 
         # 3. Với mọi M ∈ P(N) (các hàng xóm của N)
@@ -61,20 +61,20 @@ def astar_algorithm(draw, grid, start, goal):
             if temp_g_score < g_score[neighbor]:
                 came_from[neighbor] = current
                 g_score[neighbor] = temp_g_score
-                f_score[neighbor] = temp_g_score + heuristic(neighbor.get_pos(), goal.get_pos())
+                f_score[neighbor] = temp_g_score + heuristic(neighbor.getPos(), goal.getPos())
 
                 # Thêm M vào tập biên O
                 if neighbor not in open_set_hash:
                     count += 1
                     open_set.put((f_score[neighbor], count, neighbor))
                     open_set_hash.add(neighbor)
-                    neighbor.make_open()  # Đánh dấu M là nút đang xét
+                    neighbor.makeOpen()  # Đánh dấu M là nút đang xét
 
         draw()  # Vẽ lại trạng thái
 
         # Đánh dấu nút N đã xét xong
-        if current != start:
-            current.make_closed()
+        if current != begin:
+            current.makeClosed()
 
     # Trả về thất bại nếu không tìm được đường đi
     return False
@@ -89,11 +89,11 @@ def heuristic(p1, p2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
-def reconstruct_path(came_from, current, draw):
+def reconstructPath(came_from, current, draw):
     """
     Truy vết lại đường đi từ điểm đích về điểm bắt đầu.
     """
     while current in came_from:
         current = came_from[current]
-        current.make_path()
+        current.makePath()
         draw()

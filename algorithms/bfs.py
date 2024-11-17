@@ -1,31 +1,40 @@
-# bfs.py
 import pygame
 
-def bfs_algorithm(draw, grid, start, end):
-    queue = [start]
-    came_from = {}
+def bfs_algorithm(draw, begin, end):
+    queue = [begin]
+    cameFrom = {}
+
+    # Đánh dấu các ô đã được kiểm tra
+    visited = set()
+    visited.add(begin)
+    
     while queue:
         current = queue.pop(0)
+
         if current == end:
-            reconstruct_path(came_from, end, draw)
-            end.make_end()
+            reconstructPath(cameFrom, end, draw, begin)
             return True
 
         for neighbor in current.neighbors:
-            if neighbor not in came_from:
+            if neighbor not in cameFrom and neighbor not in visited:
                 queue.append(neighbor)
-                came_from[neighbor] = current
-                neighbor.make_open()
+                cameFrom[neighbor] = current
+                visited.add(neighbor)
+                neighbor.makeOpen()
 
-        draw()
+        # Chỉ vẽ lại sau mỗi lần duyệt ô và thêm độ trễ
+        if current != begin:
+            current.makeClosed()
+        
+        draw()  # Vẽ lại sau mỗi vòng lặp BFS
+        pygame.time.delay(50)  # Thêm độ trễ 50ms để không quá nhanh
 
-        if current != start:
-            current.make_closed()
-
+    draw()  # Vẽ lại toàn bộ bảng sau khi BFS kết thúc
     return False
 
-def reconstruct_path(came_from, current, draw):
-    while current in came_from:
-        current = came_from[current]
-        current.make_path()
-        draw()
+def reconstructPath(cameFrom, current, draw, begin):
+    while current in cameFrom:
+        current = cameFrom[current]
+        if current != begin:  # Kiểm tra nếu không phải điểm bắt đầu
+            current.makePath()
+    draw()  # Vẽ lại toàn bộ bảng sau khi hoàn thành đường đi
