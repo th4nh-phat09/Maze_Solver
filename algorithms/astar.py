@@ -1,5 +1,5 @@
 import pygame
-import math  # Thư viện để tính toán căn bậc hai
+import math  
 from queue import PriorityQueue
 
 
@@ -13,15 +13,22 @@ def astar_algorithm(draw, grid, start, goal):
     # Khởi tạo tập các nút biên (open set) O ← {S}
     open_set = PriorityQueue()
     count = 0
+    #Thêm vào hàng đợi ưu tiên
     open_set.put((0, count, start))  # (f(N), count, N)
     came_from = {}
 
     # g(N): chi phí từ nút bắt đầu đến nút N
-    g_score = {spot: float('inf') for row in grid for spot in row}
+    g_score = {}
+    for row in grid:
+        for spot in row:
+            g_score[spot] = float('inf')
     g_score[start] = 0
 
     # f(N) = g(N) + h(N)
-    f_score = {spot: float('inf') for row in grid for spot in row}
+    f_score = {}
+    for row in grid:
+        for spot in row:
+            f_score[spot] = float('inf')
     f_score[start] = heuristic(start.get_pos(), goal.get_pos())
 
     # open_set_hash để theo dõi các nút đang được xét
@@ -34,6 +41,8 @@ def astar_algorithm(draw, grid, start, goal):
                 pygame.quit()
 
         # 1. Lấy nút N có f(N) nhỏ nhất ra khỏi O
+        #Khi gọi get(), nó trả về một tuple có dạng (f_score, count, node).
+        #[2] ở đây không phải là chỉ số của f_score nhỏ nhất, mà là chỉ số của phần tử trong tuple.
         current = open_set.get()[2]  # Lấy nút N
         open_set_hash.remove(current)
 
@@ -41,6 +50,7 @@ def astar_algorithm(draw, grid, start, goal):
         if current == goal:
             reconstruct_path(came_from, goal, draw)
             goal.make_end()  # Đánh dấu điểm kết thúc
+            start.make_start()
             return True
 
         # 3. Với mọi M ∈ P(N) (các hàng xóm của N)
