@@ -130,10 +130,15 @@ def make_grid(rows, width):
 
 def draw_grid(win, rows, width):
     gap = width // rows
+
+    # Vẽ các đường ngang
     for i in range(rows):
         pygame.draw.line(win, GREY, (0, i * gap), (width, i * gap))
-        for j in range(rows):
-            pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
+
+    # Vẽ các đường dọc
+    for j in range(rows):
+        pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
+
 
 def draw(win, grid, rows, width):
     win.fill(WHITE)
