@@ -2,6 +2,9 @@ import pygame
 import tkinter as tk
 from algorithms.astar import astar_algorithm
 from algorithms.bfs import bfs_algorithm
+from algorithms.backtracking import backtracking_algorithm
+# from algorithms.simulated import simulated_annealing_algorithm
+
 import os
 
 # Cấu hình màn hình và tên ứng dụng
@@ -205,8 +208,24 @@ def main():
                     for row in grid:
                         for node in row:
                             node.updateNeighbors(grid)
- 
+  
                     bfs_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), begin, end)
+
+                # if event.key == pygame.K_s and begin and end:
+                #     for row in grid:
+                #         for node in row:
+                #             node.updateNeighbors(grid)
+
+                #     simulated_annealing_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, begin, end)
+
+                if event.key == pygame.K_t and begin and end:
+                    for row in grid:
+                        for node in row:
+                            node.updateNeighbors(grid)
+    
+                    backtracking_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, begin, end, {})
+
+
                     
 
     pygame.quit()
