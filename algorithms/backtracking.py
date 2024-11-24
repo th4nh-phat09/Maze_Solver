@@ -32,7 +32,7 @@ def backtracking_algorithm(draw, grid, current, goal, path):
                 return True
 
             # Nếu không tìm được đường, quay lui
-            neighbor.reset()
+            #neighbor.reset()
             draw()
             #pygame.time.delay(50)
     return False

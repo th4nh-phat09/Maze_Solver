@@ -14,7 +14,7 @@ def bfs_algorithm(draw, begin, end):
         
 
         for neighbor in current.neighbors:
-            if neighbor not in cameFrom and neighbor not in visited:
+            if neighbor not in visited:
                 queue.append(neighbor)
                 cameFrom[neighbor] = current
                 if neighbor == end:

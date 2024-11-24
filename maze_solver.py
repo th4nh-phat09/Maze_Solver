@@ -235,6 +235,8 @@ def run_maze_solver(algorithm_choice):
                         bfs_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), begin, end)
                     elif algorithm_choice == "backtracking":
                         backtracking_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, begin, end, {})
+                        begin.makeStart()
+                        draw(WIN, grid, ROWS, WIDTH)
                     elif algorithm_choice == "simulated":
                         simulated_annealing_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, begin, end)
                     
