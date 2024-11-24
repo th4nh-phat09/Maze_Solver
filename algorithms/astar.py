@@ -49,8 +49,8 @@ def astar_algorithm(draw, grid, begin, goal):
         # 2. Nếu N thuộc G, return đường đi tới N
         if current == goal:
             reconstructPath(came_from, goal, draw)
-            goal.makeEnd()  # Đánh dấu điểm kết thúc
             begin.makeStart() #Đánh dấu điểm bắt đầu
+            draw()
             return True
 
         # 3. Với mọi M ∈ P(N) (các hàng xóm của N)

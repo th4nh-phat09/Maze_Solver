@@ -11,14 +11,15 @@ def bfs_algorithm(draw, begin, end):
     while queue:
         current = queue.pop(0)
 
-        if current == end:
-            reconstructPath(cameFrom, end, draw, begin)
-            return True
+        
 
         for neighbor in current.neighbors:
             if neighbor not in cameFrom and neighbor not in visited:
                 queue.append(neighbor)
                 cameFrom[neighbor] = current
+                if neighbor == end:
+                    reconstructPath(cameFrom, end, draw, begin)
+                    return True
                 visited.add(neighbor)
                 neighbor.makeOpen()
 
