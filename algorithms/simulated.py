@@ -2,52 +2,42 @@ import pygame
 import random
 import math
 
-def simulated_annealing_algorithm(draw, grid, begin, end):
-    """
-    Simulated Annealing algorithm with colored visualization for states.
-    """
-    temperature = 100  # Initial temperature
-    alpha = 0.99       # Cooling rate
+def simulated_annealing_algorithm(draw, begin, end):
+    temp= 100  # khởi tạo nhiệt độ
+    alpha = 0.99       # làm mát nhiệt độ
     cameFrom = {}  
-
     current = begin
-    current_cost = manhattan_distance(current, end)
+    currentCost = manhattan(current, end)
 
-    while temperature > 1:
+    while temp > 1:
         draw()
-
         # Đặt màu vàng cho các ô đã duyệt
         if current != begin and current != end:
             current.makePath()
-
         pygame.time.delay(50)  # Độ trễ để quan sát
+        neighbors = current.neighbors#lấy các ô hàng xóm
+        nextNode = random.choice(neighbors)#chọn ngẫu nhiên 1 ô hàng xóm
+        nextCost = manhattan(nextNode, end)
 
-        # Randomly choose a neighbor
-        neighbors = current.neighbors
-        if not neighbors:
-            break
-
-        next_node = random.choice(neighbors)
-        next_cost = manhattan_distance(next_node, end)
-
-        # Accept the neighbor if it improves or based on probability
-        if next_cost < current_cost:
-            cameFrom[next_node] = current
-            current = next_node
-            current_cost = next_cost
+        # chọn ô hàng xóm nếu nó có chi phí thấp hơn
+        if nextCost < currentCost:
+            cameFrom[nextNode] = current
+            current = nextNode
+            currentCost = nextCost
         else:
-            probability = math.exp((current_cost - next_cost) / temperature)
+            # tính xác suất chọn ô hàng xóm
+            probability = math.exp((currentCost - nextCost) / temp)
             if random.random() < probability:
-                cameFrom[next_node] = current
-                current = next_node
-                current_cost = next_cost
+                cameFrom[nextNode] = current
+                current = nextNode
+                currentCost = nextCost
 
         # Đánh dấu các ô đang duyệt
         if current != begin and current != end:
             current.makeOpen()
 
-        # Cool down the temperature
-        temperature *= alpha
+        # Làm mát nhiệt độ
+        temp *= alpha
 
         # Nếu tìm đến đích
         if current == end:
@@ -57,8 +47,7 @@ def simulated_annealing_algorithm(draw, grid, begin, end):
     return False
 
 
-def manhattan_distance(node, end):
-    """Calculate Manhattan distance between two nodes."""
+def manhattan(node, end):
     x1, y1 = node.getPos()
     x2, y2 = end.getPos()
     return abs(x1 - x2) + abs(y1 - y2)

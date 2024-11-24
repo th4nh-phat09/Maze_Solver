@@ -87,6 +87,8 @@ class Node:
 
     def makePath(self):
         self.image = PATH_IMAGE
+    def isPath(self):
+       return self.image == PATH_IMAGE
 
     def draw(self, win):
         if self.image:
@@ -238,7 +240,7 @@ def run_maze_solver(algorithm_choice):
                         begin.makeStart()
                         draw(WIN, grid, ROWS, WIDTH)
                     elif algorithm_choice == "simulated":
-                        simulated_annealing_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, begin, end)
+                        simulated_annealing_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), begin, end)
                     
                     pygame.time.delay(2000)
                     run = False

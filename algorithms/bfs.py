@@ -1,18 +1,14 @@
 import pygame
-
 def bfs_algorithm(draw, begin, end):
+    #Khởi tạo queue và visited để lưu trữ các ô đã được kiểm tra
     queue = [begin]
     cameFrom = {}
-
     # Đánh dấu các ô đã được kiểm tra
     visited = set()
     visited.add(begin)
-    
+
     while queue:
         current = queue.pop(0)
-
-        
-
         for neighbor in current.neighbors:
             if neighbor not in visited:
                 queue.append(neighbor)
@@ -22,14 +18,11 @@ def bfs_algorithm(draw, begin, end):
                     return True
                 visited.add(neighbor)
                 neighbor.makeOpen()
-
         # Chỉ vẽ lại sau mỗi lần duyệt ô và thêm độ trễ
         if current != begin:
             current.makeClosed()
-        
         draw()  # Vẽ lại sau mỗi vòng lặp BFS
         pygame.time.delay(50)  # Thêm độ trễ 50ms để không quá nhanh
-
     draw()  # Vẽ lại toàn bộ bảng sau khi BFS kết thúc
     return False
 

@@ -9,13 +9,13 @@ def astar_algorithm(draw, grid, begin, goal):
     goal: Điểm đích
     """
     # Khởi tạo tập các nút biên (open set) O ← {S}
-    open_set = PriorityQueue()
+    open = PriorityQueue()
     count = 0
     #Thêm vào hàng đợi ưu tiên
-    open_set.put((0, count, begin))  # (f(N), count, N)
+    open.put((0, count, begin))  # (f(N), count, N)
     path = {} #đường đi ban đầu băng đầu là rỗng
     # open_set_hash để theo dõi các nút đang được xét
-    open_set_hash = {begin}
+    openHash = {begin}
 
     # g(N): chi phí từ nút bắt đầu đến nút N
     g= {}
@@ -28,12 +28,12 @@ def astar_algorithm(draw, grid, begin, goal):
     f[begin] = heuristic(begin.getPos(), goal.getPos()) # f(N) = g(N) + h(N)
 
     # Vòng lặp chính (While O không rỗng)
-    while not open_set.empty():
+    while not open.empty():
         # 1. Lấy nút N có f(N) nhỏ nhất ra khỏi O
         #Khi gọi get(), nó trả về một tuple có dạng (f_score, count, node).
         #2. ở đây không phải là chỉ số của f_score nhỏ nhất, mà là chỉ số của phần tử trong tuple.
-        current = open_set.get()[2]  # Lấy nút N
-        open_set_hash.remove(current)
+        current = open.get()[2]  # Lấy nút N
+        openHash.remove(current)
 
         # 2. Nếu N là Goal, return đường đi tới N
         if current == goal:
@@ -52,10 +52,12 @@ def astar_algorithm(draw, grid, begin, goal):
                 g[neighbor] = temp
                 f[neighbor] = temp + heuristic(neighbor.getPos(), goal.getPos())
                 # Thêm M vào tập biên O
-                if neighbor not in open_set_hash:
+                # Có thể loại bỏ việc sử dụng open_set_hash nếu bạn có cách khác để kiểm tra xem một nút đã có trong tập mở (open set) hay chưa.
+               # Tuy nhiên, điều này có thể làm giảm hiệu suất của thuật toán, vì việc kiểm tra sự tồn tại trong một tập hợp (set) thường nhanh hơn so với việc kiểm tra trong một hàng đợi ưu tiên (priority queue).
+                if neighbor not in openHash:
                     count += 1
-                    open_set.put((f[neighbor], count, neighbor))
-                    open_set_hash.add(neighbor)
+                    open.put((f[neighbor], count, neighbor))
+                    openHash.add(neighbor)
                     neighbor.makeOpen()  # Đánh dấu M là nút đang xét
 
         draw()  # Vẽ lại trạng thái
