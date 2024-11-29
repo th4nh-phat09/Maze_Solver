@@ -31,7 +31,7 @@ def astar_algorithm(draw, grid, begin, goal):
     while not open.empty():
         # 1. Lấy nút N có f(N) nhỏ nhất ra khỏi O
         #Khi gọi get(), nó trả về một tuple có dạng (f_score, count, node).
-        #2. ở đây không phải là chỉ số của f_score nhỏ nhất, mà là chỉ số của phần tử trong tuple.
+        #2. ở đây    phải là chỉ số của f_score nhỏ nhất, mà là chỉ số của phần tử trong tuple.
         current = open.get()[2]  # Lấy nút N
         openHash.remove(current)
 

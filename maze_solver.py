@@ -1,5 +1,8 @@
 import pygame
 import tkinter as tk
+import matplotlib.pyplot as plt
+import time
+import numpy as np
 from tkinter import ttk
 from algorithms.astar import astar_algorithm
 from algorithms.bfs import bfs_algorithm
@@ -155,7 +158,7 @@ def getClicked(pos, rows, width):
 def show_algorithm_menu():
     root = tk.Tk()
     root.title("Chọn Thuật Toán")
-    root.geometry("400x500")
+    root.geometry("400x600")  # Tăng kích thước cửa sổ để chứa thêm nút
     
     style = ttk.Style()
     style.configure('TButton', padding=10, font=('Arial', 12))
@@ -170,17 +173,32 @@ def show_algorithm_menu():
         root.destroy()
         run_maze_solver(algorithm)
     
+    def compare_algorithms():
+        root.destroy()
+        run_comparison()
+    
+    # Các nút cho từng thuật toán
     ttk.Button(frame, text="A* Algorithm", 
                command=lambda: start_maze_with_algorithm("astar")).grid(row=1, column=0, pady=10)
+    
     ttk.Button(frame, text="BFS Algorithm", 
                command=lambda: start_maze_with_algorithm("bfs")).grid(row=2, column=0, pady=10)
+    
     ttk.Button(frame, text="Backtracking Algorithm", 
                command=lambda: start_maze_with_algorithm("backtracking")).grid(row=3, column=0, pady=10)
+    
     ttk.Button(frame, text="Simulated Annealing", 
                command=lambda: start_maze_with_algorithm("simulated")).grid(row=4, column=0, pady=10)
     
+    # Nút so sánh thuật toán
+    ttk.Button(frame, text="So sánh các thuật toán", 
+               command=compare_algorithms,
+               style='TButton').grid(row=5, column=0, pady=10)
+    
+    # Nút thoát
     ttk.Button(frame, text="Thoát", 
-               command=root.destroy).grid(row=5, column=0, pady=20)
+               command=root.destroy,
+               style='TButton').grid(row=6, column=0, pady=20)
     
     root.mainloop()
 
@@ -188,7 +206,7 @@ def run_maze_solver(algorithm_choice):
     global WIN
     pygame.init()  # Khởi tạo lại Pygame
     WIN = pygame.display.set_mode((WIDTH, WIDTH))
-    ROWS = 32
+    ROWS = 16
     grid = makeGrid(ROWS, WIDTH)
     begin = None
     end = None
@@ -246,6 +264,134 @@ def run_maze_solver(algorithm_choice):
                     run = False
                     pygame.quit()
                     show_algorithm_menu()
+
+def run_comparison():
+    global WIN
+    pygame.init()
+    WIN = pygame.display.set_mode((WIDTH, WIDTH))
+    ROWS = 16
+    grid = makeGrid(ROWS, WIDTH)
+    
+  # Đặt điểm bắt đầu ở vị trí (3,3)
+    start_node = grid[3][3]
+    start_node.makeStart()
+    
+    # Đặt điểm kết thúc ở vị trí (25,25)
+    end_node = grid[12][12]
+    end_node.makeEnd()
+    
+    # Tạo chướng ngại vật theo mẫu mới
+    obstacles = [
+        # Tạo một bức tường ngang
+        (7, 4), (7, 5), (7, 6), (7, 7), (7, 8),
+        # Tạo một bức tường dọc
+        (5, 7), (6, 7), (7, 7), (8, 7), (9, 7),
+        # Một vài chướng ngại vật rời rạc
+        (5, 5), (9, 9), (6, 10), (10, 6)
+    ]
+    
+    for obs in obstacles:
+        grid[obs[0]][obs[1]].makeBarrier()
+    
+    # Cập nhật neighbors cho tất cả các node
+    for row in grid:
+        for node in row:
+            node.updateNeighbors(grid)
+    
+    # Dictionary để lưu kết quả
+    results = {
+        'A*': {'time': 0, 'path_length': 0},
+        'BFS': {'time': 0, 'path_length': 0},
+        'Backtracking': {'time': 0, 'path_length': 0},
+        'Simulated Annealing': {'time': 0, 'path_length': 0}
+    }
+    
+    # Chạy từng thuật toán và đo thời gian
+    algorithms = {
+        'A*': lambda: astar_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, start_node, end_node),
+        'BFS': lambda: bfs_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), start_node, end_node),
+        'Backtracking': lambda: backtracking_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), grid, start_node, end_node, {}),
+        'Simulated Annealing': lambda: simulated_annealing_algorithm(lambda: draw(WIN, grid, ROWS, WIDTH), start_node, end_node)
+    }
+    
+    for name, algo in algorithms.items():
+        # Reset grid trước mỗi lần chạy
+        for row in grid:
+            for node in row:
+                if not (node.checkStart() or node.checkEnd() or node.checkBarrier()):
+                    node.reset()
+        
+        start_time = time.time()
+        algo()
+        end_time = time.time()
+
+        # Vẽ lại điểm start và end sau khi thuật toán hoàn thành
+        start_node.makeStart()  
+        end_node.makeEnd()      
+        
+        # Tính thời gian và độ dài đường đi
+        results[name]['time'] = end_time - start_time
+        results[name]['path_length'] = count_path_length(grid)
+        
+        # Hiển thị kết quả trên màn hình
+        draw(WIN, grid, ROWS, WIDTH)
+        pygame.time.delay(1000)
+    
+    pygame.quit()
+    
+    # Vẽ biểu đồ so sánh
+    plot_comparison(results)
+
+def count_path_length(grid):
+    count = 0
+    for row in grid:
+        for node in row:
+            if node.isPath():
+                count += 1
+    return count
+
+def plot_comparison(results):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    
+    algorithms = list(results.keys())
+    times = [results[algo]['time'] for algo in algorithms]
+    path_lengths = [results[algo]['path_length'] for algo in algorithms]
+    
+    # Plot thời gian thực thi
+    bars1 = ax1.bar(algorithms, times, color=['#2ecc71', '#3498db', '#e74c3c', '#f1c40f'])
+    ax1.set_title('Thời gian thực thi', fontsize=12, fontweight='bold')
+    ax1.set_ylabel('Thời gian (giây)', fontsize=10)
+    plt.setp(ax1.xaxis.get_majorticklabels(), rotation=45)
+    
+    # Thêm giá trị lên đỉnh cột
+    for bar in bars1:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height,
+                f'{height:.3f}s',
+                ha='center', va='bottom')
+    
+    # Plot độ dài đường đi
+    bars2 = ax2.bar(algorithms, path_lengths, color=['#2ecc71', '#3498db', '#e74c3c', '#f1c40f'])
+    ax2.set_title('Độ dài đường đi', fontsize=12, fontweight='bold')
+    ax2.set_ylabel('Số ô', fontsize=10)
+    plt.setp(ax2.xaxis.get_majorticklabels(), rotation=45)
+    
+    # Thêm giá trị lên đỉnh cột
+    for bar in bars2:
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height)} ô',
+                ha='center', va='bottom')
+    
+    # Thêm lưới và điều chỉnh layout
+    ax1.grid(True, linestyle='--', alpha=0.7)
+    ax2.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    
+    # Thêm tiêu đề chung
+    fig.suptitle('So sánh hiệu suất các thuật toán', fontsize=14, fontweight='bold', y=1.05)
+    
+    plt.show()
 
 def main():
     show_algorithm_menu()
