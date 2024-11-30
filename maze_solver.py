@@ -9,6 +9,7 @@ from algorithms.bfs import bfs_algorithm
 from algorithms.backtracking import backtracking_algorithm
 from algorithms.simulated import simulated_annealing_algorithm
 import os
+import csv
 
 # Cấu hình màn hình và tên ứng dụng
 WIDTH = 800
@@ -338,9 +339,41 @@ def run_comparison():
         pygame.time.delay(1000)
     
     pygame.quit()
+
+    save_results_to_csv(results)
     
     # Vẽ biểu đồ so sánh
     plot_comparison(results)
+
+def save_results_to_csv(results):
+    # Tạo thư mục dataset nếu chưa tồn t��i
+    dataset_folder = os.path.join(os.path.dirname(__file__), "dataset")
+    if not os.path.exists(dataset_folder):
+        os.makedirs(dataset_folder)
+    
+    filename = 'maze_solver_results.csv'
+    filepath = os.path.join(dataset_folder, filename)
+    
+    # Lấy timestamp hiện tại
+    current_time = time.strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Kiểm tra xem file đã tồn tại chưa
+    file_exists = os.path.exists(filepath)
+    
+    with open(filepath, 'a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        
+        # Chỉ ghi header nếu file mới
+        if not file_exists:
+            writer.writerow([ 'Algorithms', 'Run(s)', 'Moves(square)'])
+        
+        # Ghi dữ liệu cho từng thuật toán với cùng một timestamp
+        for algo_name, data in results.items():
+            writer.writerow([
+                algo_name,
+                f"{data['time']:.3f}",
+                data['path_length']
+            ])
 
 def count_path_length(grid):
     count = 0

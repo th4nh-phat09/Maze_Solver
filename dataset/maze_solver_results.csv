@@ -1,0 +1,9 @@
+Algorithms,Run(s),Moves(square)
+A*,0.355,17
+BFS,10.963,17
+Backtracking,5.041,75
+Simulated Annealing,23.877,141
+A*,0.366,17
+BFS,10.936,17
+Backtracking,5.065,75
+Simulated Annealing,25.279,92
