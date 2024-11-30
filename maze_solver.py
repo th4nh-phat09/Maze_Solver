@@ -10,6 +10,8 @@ from algorithms.backtracking import backtracking_algorithm
 from algorithms.simulated import simulated_annealing_algorithm
 import os
 import csv
+from qlearning.train import train_agent
+
 
 # Cấu hình màn hình và tên ứng dụng
 WIDTH = 800
@@ -155,6 +157,55 @@ def getClicked(pos, rows, width):
     row = y // gap
     col = x // gap
     return row, col
+def create_test_maze(grid):
+    """Tạo mê cung cố định với start, end và barriers định sẵn"""
+    # Đặt điểm start ở (2,2)
+    start_node = grid[2][2]
+    start_node.makeStart()
+    
+    # Đặt điểm end ở (12,12)
+    end_node = grid[12][12]
+    end_node.makeEnd()
+    
+    # Tạo các barrier cố định
+    barriers = [
+        (5,5), (5,6), (5,7), (5,8),  # Tường ngang
+        (6,5), (7,5), (8,5),         # Tường dọc
+        (8,6), (8,7), (8,8),         # Tường ngang khác
+        (3,3), (4,4), (10,10)        # Một số barrier rời rạc
+    ]
+    
+    for pos in barriers:
+        grid[pos[0]][pos[1]].makeBarrier()
+    
+    return start_node, end_node
+
+# Thêm hàm để chạy Q-learning training
+def run_qlearning_training(grid, ROWS, WIDTH, WIN):
+    """Chạy training Q-learning trên mê cung cố định"""
+    print("=== BẮT ĐẦU QUÁ TRÌNH TRAINING Q-LEARNING ===")
+    
+    # Tạo mê cung test
+    start_node, end_node = create_test_maze(grid)
+    print(f"Đã tạo mê cung với điểm bắt đầu tại ({start_node.row}, {start_node.col}) và điểm kết thúc tại ({end_node.row}, {end_node.col})")
+    
+    # Cập nhật neighbors cho tất cả các node
+    for row in grid:
+        for node in row:
+            node.updateNeighbors(grid)
+    
+    # Train agent với các tham số đúng
+    try:
+        agent = train_agent(
+            grid=grid,
+            start_pos=(start_node.row, start_node.col),  # Thay vì start_node
+            end_pos=(end_node.row, end_node.col),        # Thay vì end_node 
+            num_episodes=100,
+            draw_function=lambda: draw(WIN, grid, ROWS, WIDTH)
+        )
+        print("Training hoàn tất thành công!")
+    except Exception as e:
+        print(f"Lỗi trong quá trình training: {str(e)}")
 
 def show_algorithm_menu():
     root = tk.Tk()
@@ -191,24 +242,32 @@ def show_algorithm_menu():
     ttk.Button(frame, text="Simulated Annealing", 
                command=lambda: start_maze_with_algorithm("simulated")).grid(row=4, column=0, pady=10)
     
+    ttk.Button(frame, text="Q-Learning (Test)", 
+               command=lambda: start_maze_with_algorithm("qlearning")).grid(row=5, column=0, pady=10)
+    
     # Nút so sánh thuật toán
     ttk.Button(frame, text="So sánh các thuật toán", 
                command=compare_algorithms,
-               style='TButton').grid(row=5, column=0, pady=10)
+               style='TButton').grid(row=6, column=0, pady=10)
     
     # Nút thoát
     ttk.Button(frame, text="Thoát", 
                command=root.destroy,
-               style='TButton').grid(row=6, column=0, pady=20)
+               style='TButton').grid(row=7, column=0, pady=20)
     
     root.mainloop()
 
 def run_maze_solver(algorithm_choice):
     global WIN
-    pygame.init()  # Khởi tạo lại Pygame
+    pygame.init()
     WIN = pygame.display.set_mode((WIDTH, WIDTH))
     ROWS = 16
     grid = makeGrid(ROWS, WIDTH)
+    
+    if algorithm_choice == "qlearning":
+        run_qlearning_training(grid, ROWS, WIDTH, WIN)
+        show_algorithm_menu()
+        return
     begin = None
     end = None
     run = True
@@ -346,7 +405,7 @@ def run_comparison():
     plot_comparison(results)
 
 def save_results_to_csv(results):
-    # Tạo thư mục dataset nếu chưa tồn t��i
+    # Tạo thư mục dataset nếu chưa tồn tại
     dataset_folder = os.path.join(os.path.dirname(__file__), "dataset")
     if not os.path.exists(dataset_folder):
         os.makedirs(dataset_folder)
