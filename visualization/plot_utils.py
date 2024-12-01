@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import csv
 import os
-import time
-
 def save_results_to_csv(results):
     dataset_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataset")
     if not os.path.exists(dataset_folder):

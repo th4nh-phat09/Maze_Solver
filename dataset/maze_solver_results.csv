@@ -15,3 +15,7 @@ A*,0.312,17
 BFS,10.926,17
 Backtracking,5.042,75
 Simulated Annealing,20.621,119
+A*,0.316,17
+BFS,10.924,17
+Backtracking,5.204,75
+Simulated Annealing,23.279,108
