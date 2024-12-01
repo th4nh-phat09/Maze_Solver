@@ -195,12 +195,12 @@ def run_qlearning_training(grid, ROWS, WIDTH, WIN):
         for node in row:
             node.updateNeighbors(grid)
     
-    # Train agent với các tham số đúng
+    # Train agent 
     try:
         agent = train_agent(
             grid=grid,
-            start_pos=(start_node.row, start_node.col),  # Thay vì start_node
-            end_pos=(end_node.row, end_node.col),        # Thay vì end_node 
+            start_pos=(start_node.row, start_node.col),  
+            end_pos=(end_node.row, end_node.col),       
             num_episodes=100,
             draw_function=lambda: draw(WIN, grid, ROWS, WIDTH)
         )

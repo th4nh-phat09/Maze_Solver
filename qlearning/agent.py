@@ -8,13 +8,12 @@ class QLearningAgent:
         self.discount_factor = discount_factor
         self.epsilon = epsilon
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        
-        # Khởi tạo Q-table
-        self.q_table = {}
+        self.epsilon_decay = 0.995  
+        self.q_table = {} # Khởi tạo Q-table
     
     def get_action(self, state, valid_actions):
         """Chọn action dựa trên epsilon-greedy policy"""
+        # Chọn ngẫu nhiên action với xác suất epsilon (khám phá)
         if np.random.rand() <= self.epsilon:
             return np.random.choice(valid_actions)
         
@@ -48,7 +47,8 @@ class QLearningAgent:
         
         # Cập nhật Q-value
         old_q = self.q_table[state].get(action, 0)
-        new_q = old_q + self.learning_rate * (reward + self.discount_factor * next_max_q - old_q)
+        new_q = (1 - self.learning_rate) * old_q + \
+            self.learning_rate * (reward + self.discount_factor * next_max_q)
         self.q_table[state][action] = new_q
         
         # Giảm epsilon
