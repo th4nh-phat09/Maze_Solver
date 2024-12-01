@@ -21,6 +21,10 @@ def train_agent(grid, start_pos, end_pos, num_episodes=500, draw_function=None):
     start_node = grid[start_pos[0]][start_pos[1]]
     
     global current_episode_actions, best_episode_actions, best_episode_reward, first_success_actions
+    
+    # Tạo file để ghi kết quả
+    with open('training_results.txt', 'w', encoding='utf-8') as f:
+        f.write("=== KẾT QUẢ TRAINING ===\n\n")
         
     for episode in range(num_episodes):
         print(f"Đang training episode {episode}/{num_episodes}")
@@ -57,10 +61,16 @@ def train_agent(grid, start_pos, end_pos, num_episodes=500, draw_function=None):
                         best_episode_reward = ep_reward
                         best_episode_actions = current_episode_actions.copy()
                     
-                    # Lưu actions xuống file
-                    np.save(f'episode_{episode}_actions.npy', np.array(current_episode_actions))
-                    # Lưu reward riêng
-                    np.save(f'episode_{episode}_reward.npy', np.array([ep_reward]))
+                    # Ghi kết quả vào file
+                    with open('training_results.txt', 'a', encoding='utf-8') as f:
+                        directions = {0: "LÊN", 1: "PHẢI", 2: "XUỐNG", 3: "TRÁI"}
+                        f.write(f"\nEpisode {episode}:\n")
+                        f.write(f"Reward: {ep_reward}\n")
+                        f.write("Actions: ")
+                        for act in current_episode_actions:
+                            f.write(f"{directions[act]} -> ")
+                        f.write("ĐÍCH\n")
+                        f.write("-" * 50 + "\n")
             else:
                 current_car_pos = env.current_pos
                 if not grid[current_car_pos[0]][current_car_pos[1]].checkEnd():
@@ -72,17 +82,23 @@ def train_agent(grid, start_pos, end_pos, num_episodes=500, draw_function=None):
                 agent.learn(state, action, reward, next_state, list(range(4)))
                 state = next_state
 
-    # In kết quả cuối cùng
-    print("\nKết quả training:")
-    if first_success_actions is not None:
-        print(f"Actions đầu tiên thành công: {first_success_actions}")
-        print(f"Actions tốt nhất (reward = {best_episode_reward}): {best_episode_actions}")
-        
-        # Lưu kết quả tốt nhất
-        np.save('best_actions.npy', np.array(best_episode_actions))
-        np.save('first_success_actions.npy', np.array(first_success_actions))
-    else:
-        print("Không tìm thấy đường đi thành công nào!")
+    # Ghi kết quả tổng kết vào cuối file
+    with open('training_results.txt', 'a', encoding='utf-8') as f:
+        f.write("\n=== TỔNG KẾT ===\n")
+        if first_success_actions is not None:
+            directions = {0: "LÊN", 1: "PHẢI", 2: "XUỐNG", 3: "TRÁI"}
+            
+            f.write("\nĐường đi đầu tiên thành công:\n")
+            for act in first_success_actions:
+                f.write(f"{directions[act]} -> ")
+            f.write("ĐÍCH\n")
+            
+            f.write(f"\nĐường đi tốt nhất (reward = {best_episode_reward}):\n")
+            for act in best_episode_actions:
+                f.write(f"{directions[act]} -> ")
+            f.write("ĐÍCH\n")
+        else:
+            f.write("\nKhông tìm thấy đường đi thành công nào!\n")
     
     start_node.makeStart()
     if draw_function:
