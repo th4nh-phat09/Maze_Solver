@@ -262,7 +262,7 @@ def run_maze_solver(algorithm_choice):
     global WIN
     pygame.init()
     WIN = pygame.display.set_mode((WIDTH, WIDTH))
-    ROWS = 16
+    ROWS = 32
     grid = makeGrid(ROWS, WIDTH)
     
     if algorithm_choice == "qlearning":

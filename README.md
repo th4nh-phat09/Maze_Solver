@@ -4,8 +4,8 @@
 
 Maze Solver là một ứng dụng minh họa các thuật toán tìm đường đi trong mê cung, được phát triển bởi:
 
-- Nguyễn An Thành Phát (22110197)
-- Phan Văn Thuận (22110240)
+- Nguyễn An Thành Phát
+- Phan Văn Thuận
 
 ## Tính năng
 
@@ -65,10 +65,6 @@ python maze_solver.py
 ## Đóng góp
 
 Mọi đóng góp và góp ý đều được hoan nghênh. Vui lòng tạo issue hoặc pull request.
-
-## Giấy phép
-
-[MIT License](LICENSE)
 
 ## Liên hệ
 
