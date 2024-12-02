@@ -17,7 +17,7 @@ from visualization.plot_utils import save_results_to_csv, plot_comparison
 # Cấu hình màn hình và tên ứng dụng
 WIDTH = 800
 WIN = None  # Khởi tạo WIN sau
-pygame.display.set_caption("Maze_Solver")
+pygame.display.set_caption("Maze_Solver - 22110197 Nguyễn An Thành Phát - 22110240 Phan Văn Thuận")
 
 # Cập nhập đường dẫn thư mục image
 IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), "image")
@@ -201,7 +201,7 @@ def run_qlearning_training(grid, ROWS, WIDTH, WIN):
             grid=grid,
             start_pos=(start_node.row, start_node.col),  
             end_pos=(end_node.row, end_node.col),       
-            num_episodes=100,
+            num_episodes=1000,
             draw_function=lambda: draw(WIN, grid, ROWS, WIDTH)
         )
         print("Training hoàn tất thành công!")
