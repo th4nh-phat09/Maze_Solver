@@ -60,7 +60,6 @@ python maze_solver.py
   - Các click tiếp theo: tạo chướng ngại vật
 - Click chuột phải để xóa ô đã đặt
 - Nhấn SPACE để bắt đầu tìm đường
-- Nhấn C để xóa toàn bộ mê cung
 
 ## Đóng góp
 
@@ -70,3 +69,11 @@ Mọi đóng góp và góp ý đều được hoan nghênh. Vui lòng tạo issu
 
 - Nguyễn An Thành Phát - 22110197@student.hcmute.edu.vn
 - Phan Văn Thuận - 22110240@student.hcmute.edu.vn
+
+## Demo
+
+Dưới đây là demo về cách hoạt động của các thuật toán tìm đường trong mê cung:
+
+![Demo các thuật toán tìm đường](Gif/gif.gif)
+
+_Hình ảnh minh họa quá trình tìm đường của thuật toán trong mê cung_
